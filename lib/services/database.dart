@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Database {
-  static getUserByUsername(String username) async {
+  static getUserByEmail(String email) async {
     return await FirebaseFirestore.instance
         .collection('users')
-        .where("name", isEqualTo: username)
+        .where("email", isEqualTo: email)
         .get();
   }
 
@@ -17,20 +17,26 @@ class Database {
     });
   }
 
-  // ignore: missing_return
-  static Future<bool> addChatRoom(chatRoom, chatRoomId)  {
+  static searchByName(String searchField) async {
+    return await FirebaseFirestore.instance
+        .collection("users")
+        .where('name', isEqualTo: searchField)
+        .get();
+  }
+
+  static Future<bool> addChatRoom(chatRoom, chatRoomId) {
     FirebaseFirestore.instance
         .collection("chat_room")
         .doc(chatRoomId)
         .set(chatRoom)
         .catchError((e) {
-      print(e);
+      print('Exception123: ${e.toString()}');
     });
   }
 
   static getChats(String chatRoomId) async {
     return FirebaseFirestore.instance
-        .collection("chatRoom")
+        .collection("chat_room")
         .doc(chatRoomId)
         .collection("chats")
         .orderBy('time')
@@ -39,7 +45,7 @@ class Database {
 
   static Future<void> addMessage(String chatRoomId, chatMessageData) {
     FirebaseFirestore.instance
-        .collection("chatRoom")
+        .collection("chat_room")
         .doc(chatRoomId)
         .collection("chats")
         .add(chatMessageData)
@@ -49,8 +55,12 @@ class Database {
   }
 
   static getUserChats(String itIsMyName) async {
+    print('data123: ${FirebaseFirestore.instance
+        .collection("chat_room")
+        .where('users', arrayContains: itIsMyName)
+        .snapshots()}');
     return FirebaseFirestore.instance
-        .collection("chatRoom")
+        .collection("chat_room")
         .where('users', arrayContains: itIsMyName)
         .snapshots();
   }

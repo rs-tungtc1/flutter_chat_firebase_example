@@ -1,6 +1,11 @@
+import 'package:chat_example/helper/local_storage.dart';
+import 'package:chat_example/pages/char_room_page.dart';
 import 'package:chat_example/pages/home_page.dart';
+import 'package:chat_example/pages/search_page.dart';
 import 'package:chat_example/pages/sign_up_page.dart';
 import 'package:chat_example/services/auth.dart';
+import 'package:chat_example/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +23,19 @@ class _SignInPageState extends State<SignInPage> {
   void _login() async {
     authService
         .signInWithEmailAndPassword(_emailController.text, _passController.text)
-        .then((value) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => HomePage()));
+        .then((value) async {
+      if (value != null) {
+        final userInfoSnapshot =
+            await Database.getUserByEmail(_emailController.text);
+
+        LocalStorage.saveUserLoggedInSharedPreference(true);
+        LocalStorage.saveUserNameSharedPreference(
+            userInfoSnapshot.docs[0].get("name"));
+        LocalStorage.saveUserEmailSharedPreference(
+            userInfoSnapshot.docs[0].get("email"));
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => ChatRoomPage()));
+      }
     });
   }
 

@@ -3,16 +3,16 @@ import 'package:chat_example/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Chat extends StatefulWidget {
+class ChatPage extends StatefulWidget {
   final String chatRoomId;
 
-  Chat({this.chatRoomId});
+  ChatPage({this.chatRoomId});
 
   @override
-  _ChatState createState() => _ChatState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _ChatState extends State<Chat> {
+class _ChatPageState extends State<ChatPage> {
   Stream<QuerySnapshot> chats;
   TextEditingController messageEditingController = new TextEditingController();
 
@@ -22,12 +22,12 @@ class _ChatState extends State<Chat> {
       builder: (context, snapshot) {
         return snapshot.hasData
             ? ListView.builder(
-                itemCount: snapshot.data.documents.length,
+                itemCount: snapshot.data.docs.length,
                 itemBuilder: (context, index) {
                   return MessageTile(
-                    message: snapshot.data.documents[index].data["message"],
+                    message: snapshot.data.docs[index].get("message"),
                     sendByMe: Constants.myName ==
-                        snapshot.data.documents[index].data["sendBy"],
+                        snapshot.data.docs[index].get("sendBy"),
                   );
                 })
             : Container();
@@ -96,22 +96,12 @@ class _ChatState extends State<Chat> {
                         addMessage();
                       },
                       child: Container(
-                          height: 40,
-                          width: 40,
                           decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0x36FFFFFF),
-                                    const Color(0x0FFFFFFF)
-                                  ],
-                                  begin: FractionalOffset.topLeft,
-                                  end: FractionalOffset.bottomRight),
                               borderRadius: BorderRadius.circular(40)),
                           padding: EdgeInsets.all(12),
-                          child: Image.asset(
-                            "assets/images/send.png",
-                            height: 25,
-                            width: 25,
+                          child: Icon(
+                            Icons.send,
+                            size: 25,
                           )),
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:chat_example/helper/local_storage.dart';
 import 'package:chat_example/pages/home_page.dart';
 import 'package:chat_example/pages/sign_in_page.dart';
 import 'package:chat_example/services/auth.dart';
@@ -21,13 +22,18 @@ class _SignUpPageState extends State<SignUpPage> {
     authService
         .signUpWithEmailAndPassword(_emailController.text, _passController.text)
         .then((value) {
-      Map<String, String> userInfo = {
-        "email": _emailController.text,
-        "name": _nameController.text
-      };
-      Database.uploadUserInfo(userInfo);
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => HomePage()));
+      if (value != null) {
+        Map<String, String> userInfo = {
+          "email": _emailController.text,
+          "name": _nameController.text
+        };
+        LocalStorage.saveUserLoggedInSharedPreference(true);
+        LocalStorage.saveUserNameSharedPreference(_nameController.text);
+        LocalStorage.saveUserEmailSharedPreference(_emailController.text);
+        Database.uploadUserInfo(userInfo);
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => HomePage()));
+      }
     });
   }
 

@@ -21,7 +21,7 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         isLoading = true;
       });
-      Database.getUserByUsername(searchEditingController.text)
+      Database.searchByName(searchEditingController.text)
           .then((snapshot) {
         searchResultSnapshot = snapshot;
         setState(() {
@@ -67,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Chat(
+            builder: (context) => ChatPage(
                   chatRoomId: chatRoomId,
                 )));
   }
